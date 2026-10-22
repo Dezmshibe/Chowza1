@@ -87,7 +87,7 @@ export const CustomerStore: React.FC = () => {
                   className={`text-left p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                     isSelected
                       ? 'bg-white text-[#1B1815] border-[#25D366] shadow-lg ring-2 ring-[#25D366]/40'
-                      : 'bg-white/5 hover:bg-white/10 text-white border-white/10'
+                      : 'bg-white/10 hover:bg-white/20 text-white border-white/25 shadow-xs'
                   }`}
                 >
                   <div className="min-w-0">

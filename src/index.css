@@ -283,13 +283,24 @@ p {
 }
 
 .btn-outline {
-  background: transparent;
+  background: var(--paper);
   color: var(--ink);
   border: 1.5px solid var(--line);
 }
 
 .btn-outline:hover {
   background: var(--cloud);
+}
+
+.btn-outline-white {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+}
+
+.btn-outline-white:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .btn-danger {

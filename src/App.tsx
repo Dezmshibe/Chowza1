@@ -4,26 +4,23 @@ import { Navigation } from './components/Navigation';
 import { CustomerStore } from './components/CustomerStore';
 import { CartBottomSheet } from './components/CartBottomSheet';
 import { OrderTracker } from './components/OrderTracker';
-import { WhatsAppSimulator } from './components/WhatsAppSimulator';
-import { BusinessDashboard } from './components/BusinessDashboard';
-import { MenuManager } from './components/MenuManager';
-import { QRCodeModal } from './components/QRCodeModal';
-import { AnalyticsView } from './components/AnalyticsView';
-import { BusinessSettings } from './components/BusinessSettings';
-import { SubscriptionView } from './components/SubscriptionView';
-import { AdminView } from './components/AdminView';
-import { X, MessageCircle, Heart } from 'lucide-react';
+import { BusinessAreaLayout } from './components/BusinessAreaLayout';
+import { X, MessageCircle, ShieldCheck, Search, ArrowRight } from 'lucide-react';
 
 const AppContent: React.FC = () => {
-  const { currentView, setCurrentView, flashMessages, removeFlash } = useApp();
+  const {
+    currentArea,
+    setCurrentArea,
+    currentView,
+    setCurrentView,
+    flashMessages,
+    removeFlash
+  } = useApp();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F3EEE4] text-[#1B1815]">
-      {/* Navigation Topbar */}
-      <Navigation />
-
       {/* Floating Flash Notifications Container */}
-      <div className="fixed top-20 right-4 z-50 max-w-md w-full space-y-2 pointer-events-none">
+      <div className="fixed top-16 right-4 z-50 max-w-md w-full space-y-2 pointer-events-none">
         {flashMessages.map((msg) => (
           <div
             key={msg.id}
@@ -46,72 +43,66 @@ const AppContent: React.FC = () => {
         ))}
       </div>
 
-      {/* Main View Area */}
-      <main className="flex-1">
-        {currentView === 'store' && <CustomerStore />}
-        {currentView === 'track' && <OrderTracker />}
-        {currentView === 'whatsapp' && <WhatsAppSimulator />}
-        {currentView === 'dashboard' && <BusinessDashboard />}
-        {currentView === 'menu' && <MenuManager />}
-        {currentView === 'qrcode' && <QRCodeModal />}
-        {currentView === 'analytics' && <AnalyticsView />}
-        {currentView === 'settings' && <BusinessSettings />}
-        {currentView === 'subscription' && <SubscriptionView />}
-        {currentView === 'admin' && <AdminView />}
-      </main>
+      {/* Area 1: Customer / Storefront */}
+      {currentArea === 'customer' ? (
+        <div className="flex-1 flex flex-col">
+          {/* Header has ONLY Chowza brand on the left and Cart on the right */}
+          <Navigation />
 
-      {/* Bottom Sheet Cart */}
-      <CartBottomSheet />
+          {/* Main Customer View */}
+          <main className="flex-1">
+            {currentView === 'track' ? <OrderTracker /> : <CustomerStore />}
+          </main>
 
-      {/* Footer */}
-      <footer className="bg-[#1B1815] text-[#8C857A] py-8 border-t border-white/10 mt-auto">
-        <div className="container--wide flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-[#25D366] text-white flex items-center justify-center font-bold text-xs">
-              <MessageCircle className="w-3.5 h-3.5 fill-current" />
+          {/* Customer Bottom Sheet Cart */}
+          <CartBottomSheet />
+
+          {/* Clean Customer Footer with Business/Admin entry */}
+          <footer className="bg-[#1B1815] text-[#8C857A] py-8 px-4 border-t border-white/10 mt-auto">
+            <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-[#25D366] text-white flex items-center justify-center font-bold text-xs">
+                  <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                </div>
+                <span className="text-white font-extrabold text-sm">Chowza</span>
+                <span>· Digital Food Ordering & Kitchen Platform</span>
+              </div>
+
+              {/* Customer Actions & Staff Entry */}
+              <div className="flex items-center gap-4 text-white/80">
+                <button
+                  onClick={() => setCurrentView(currentView === 'track' ? 'store' : 'track')}
+                  className="hover:text-white cursor-pointer flex items-center gap-1 font-semibold"
+                >
+                  <Search className="w-3.5 h-3.5 text-[#EDA430]" />
+                  <span>{currentView === 'track' ? 'Back to Menu' : 'Track Order'}</span>
+                </button>
+
+                <div className="h-4 w-px bg-white/20" />
+
+                {/* Switch to Business/Admin Controls */}
+                <button
+                  onClick={() => {
+                    setCurrentArea('business');
+                    setCurrentView('dashboard');
+                  }}
+                  className="btn btn-sm btn-outline-white !py-1.5 !px-3 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#25D366]" />
+                  <span>Restaurant & Admin Portal</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
             </div>
-            <span className="text-white font-extrabold text-sm">WhatsApp Food (Chowza)</span>
-            <span>· Multi-tenant digital ordering & automated kitchen management</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 text-white/70">
-            <button
-              onClick={() => setCurrentView('store')}
-              className="hover:text-white cursor-pointer"
-            >
-              Customer Store
-            </button>
-            <button
-              onClick={() => setCurrentView('whatsapp')}
-              className="hover:text-[#25D366] cursor-pointer"
-            >
-              WhatsApp Bot Sim
-            </button>
-            <button
-              onClick={() => setCurrentView('dashboard')}
-              className="hover:text-white cursor-pointer"
-            >
-              Kitchen Orders
-            </button>
-            <button
-              onClick={() => setCurrentView('subscription')}
-              className="hover:text-white cursor-pointer"
-            >
-              Plans & PayFast
-            </button>
-            <button
-              onClick={() => setCurrentView('admin')}
-              className="hover:text-[#25D366] cursor-pointer"
-            >
-              Platform Admin
-            </button>
-          </div>
-
-          <div className="flex items-center gap-1 text-[11px] text-[#8C857A]">
-            <span>Crafted for South African Township Kitchens & Restaurants</span>
-          </div>
+          </footer>
         </div>
-      </footer>
+      ) : (
+        /* Area 2: Business / Admin Controls Area */
+        <div className="flex-1 flex flex-col">
+          <BusinessAreaLayout />
+          <CartBottomSheet />
+        </div>
+      )}
     </div>
   );
 };

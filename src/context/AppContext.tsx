@@ -29,7 +29,8 @@ export type AppView =
   | 'analytics'
   | 'settings'
   | 'subscription'
-  | 'admin';
+  | 'admin'
+  | 'hub';
 
 export interface CartItem {
   food: FoodItem;
@@ -43,7 +44,9 @@ export interface FlashMessage {
 }
 
 interface AppContextType {
-  // Navigation / Views
+  // Areas & Navigation
+  currentArea: 'customer' | 'business';
+  setCurrentArea: (area: 'customer' | 'business') => void;
   currentView: AppView;
   setCurrentView: (view: AppView) => void;
   // Businesses
@@ -112,8 +115,42 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Views
-  const [currentView, setCurrentView] = useState<AppView>('store');
+  // Area: 'customer' (storefront) vs 'business' (admin controls)
+  const [currentArea, setCurrentAreaState] = useState<'customer' | 'business'>('customer');
+  const [currentView, setCurrentViewState] = useState<AppView>('store');
+
+  const setCurrentArea = (area: 'customer' | 'business') => {
+    setCurrentAreaState(area);
+    if (area === 'customer') {
+      if (currentView !== 'store' && currentView !== 'track') {
+        setCurrentViewState('store');
+      }
+    } else {
+      if (currentView === 'store') {
+        setCurrentViewState('dashboard');
+      }
+    }
+  };
+
+  const setCurrentView = (view: AppView) => {
+    setCurrentViewState(view);
+    if (view === 'store') {
+      setCurrentAreaState('customer');
+    } else if (
+      [
+        'dashboard',
+        'menu',
+        'qrcode',
+        'analytics',
+        'settings',
+        'subscription',
+        'admin',
+        'hub'
+      ].includes(view)
+    ) {
+      setCurrentAreaState('business');
+    }
+  };
 
   // Persistence helpers
   const [businesses, setBusinesses] = useState<Business[]>(() => {
@@ -615,6 +652,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        currentArea,
+        setCurrentArea,
         currentView,
         setCurrentView,
         businesses,
